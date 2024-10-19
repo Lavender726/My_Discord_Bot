@@ -6,6 +6,7 @@ import random
 import os
 from discord.ext import commands
 from bot_logic import gen_pass
+import requests
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -147,14 +148,57 @@ async def dice(ctx):
     elif nums == 6:
         await ctx.send('It is 6!')
 
-# @bot.command()
-# async def mem(ctx):
-#     # try by your self 2 min
-#     img_name = random.choice(os.listdir('images'))
-#     with open(f'images/{img_name}', 'rb') as f:
-#         picture = discord.File(f)
+@bot.command()
+async def mem(ctx):
+     # try by your self 2 min
+    img_name = random.choice(os.listdir('Meme'))
+    with open(f'Meme/{img_name}', 'rb') as f:
+        picture = discord.File(f)
  
-#     await ctx.send(file=picture)
+    await ctx.send(file=picture)
+
+# API to get random dog and duck image 
+def get_dog_image_url():
+    url = 'https://random.dog/woof.json'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+@bot.command('dog')
+async def dog(ctx):
+    '''Setiap kali permintaan dog (anjing) dipanggil, program memanggil fungsi get_dog_image_url'''
+    image_url = get_dog_image_url()
+    await ctx.send(image_url)
+def get_duck_image_url():
+    url = 'https://random-d.uk/api/random'
+    res = requests.get(url)
+    data = res.json()
+    return data['url']
+@bot.command('duck')
+async def duck(ctx):
+    '''Setiap kali permintaan duck (bebek) dipanggil, program memanggil fungsi get_duck_image_url'''
+    image_url = get_duck_image_url()
+    await ctx.send(image_url)
+@bot.command()
+async def write(ctx, *, my_string: str):
+    with open('guidance.txt', 'w', encoding='utf-8') as t:
+        text = ""
+        text += my_string
+        t.write(text)
+        
+# append kalimat.txt
+@bot.command()
+async def append(ctx, *, my_string: str):
+    with open('guidance.txt', 'a', encoding='utf-8') as t:
+        text = "\n"
+        text += my_string
+        t.write(text)
+
+# reading kalimat.txt
+@bot.command()
+async def read(ctx):
+    with open('guidance.txt', 'r', encoding='utf-8') as t:
+        document = t.read()
+        await ctx.send(document)
 
 # welcome message
 @bot.command()
@@ -163,4 +207,4 @@ async def joined(ctx, member: discord.Member):
     await ctx.send(f'{member.name} joined {discord.utils.format_dt(member.joined_at)}') # type: ignore
     # provide what you can help here
 
-bot.run('YOUR_TOKEN_HERE')
+bot.run('TOKEN_HERE')
