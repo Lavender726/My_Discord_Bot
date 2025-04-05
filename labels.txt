@@ -1,0 +1,2 @@
+0 car_crashes
+1 non_car_crashes
